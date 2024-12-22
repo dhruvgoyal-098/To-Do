@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            transition: background-color 0.5s ease;
         }
 
         .container {
@@ -30,9 +32,9 @@
 
         .header {
             font-size: 32px;
-            color: #2a2a2a;
             margin-bottom: 10px;
             font-weight: bold;
+            color: #333;
         }
 
         .quote {
@@ -58,8 +60,9 @@
             border-radius: 25px;
             box-sizing: border-box;
             outline: none;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
             margin-right: 10px;
+            color: #333;
         }
 
         .task-input:focus {
@@ -75,7 +78,7 @@
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .add-btn:active {
@@ -100,7 +103,7 @@
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             animation: bounceIn 0.3s ease;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .item.checked {
@@ -115,7 +118,7 @@
             flex-grow: 1;
             font-size: 16px;
             color: #555;
-            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .checkbox {
@@ -136,16 +139,89 @@
             border-color: #1d8db7;
         }
 
+        .delete-btn {
+            margin-left: 12px;
+            padding: 8px 16px;
+            font-size: 14px;
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .delete-btn i {
+            margin-right: 6px;
+        }
+
+        .delete-btn:hover {
+            background-color: #e03d3d;
+            transform: scale(1.05);
+        }
+
+        .delete-btn:active {
+            transform: scale(0.95);
+        }
+
         .footer {
             text-align: center;
             font-size: 16px;
             color: #777;
             margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         .footer span {
             font-weight: bold;
             color: #72e0bc;
+        }
+
+        body.dark {
+            background-color: #121212;
+        }
+
+        body.dark .container {
+            background-color: rgba(30, 30, 30, 0.9);
+            color: #fff;
+        }
+
+        body.dark .header,
+        body.dark .quote,
+        body.dark .text,
+        body.dark .footer {
+            color: #fff;
+        }
+
+        body.dark .task-input {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+        }
+
+        body.dark .add-btn {
+            background-color: #1d8db7;
+        }
+
+        body.dark .delete-btn {
+            background-color: #e03d3d;
+        }
+
+        body.dark .item {
+            background-color: #1e1e1e;
+        }
+
+        body.dark .item.checked {
+            background-color: #2a2a2a;
+        }
+
+        body.dark .checkbox input {
+            border: 2px solid #555;
+        }
+
+        body.dark .checkbox input:checked {
+            background-color: #555;
+            border-color: #1d8db7;
         }
 
         @keyframes bounceIn {
@@ -183,6 +259,7 @@
         </div>
         <ul class="list" id="taskList"></ul>
         <div class="footer">Tasks Remaining: <span id="remainingTasks">0</span></div>
+        <button id="themeToggleBtn" class="add-btn">Toggle Theme</button>
     </div>
 
     <script>
@@ -195,7 +272,6 @@
             'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05',
             'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0'
         ];
-
 
         function setRandomBackground() {
             const randomIndex = Math.floor(Math.random() * backgroundImages.length);
@@ -247,9 +323,26 @@
             const textDiv = document.createElement('div');
             textDiv.classList.add('text');
             textDiv.textContent = taskText;
+            textDiv.addEventListener('click', () => {
+                const newTaskText = prompt("Edit your task:", taskText);
+                if (newTaskText !== null && newTaskText.trim() !== '') {
+                    textDiv.textContent = newTaskText;
+                }
+            });
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+            deleteBtn.addEventListener('click', () => {
+                if (confirm("Are you sure you want to delete this task?")) {
+                    taskList.removeChild(li);
+                    updateTaskCount();
+                }
+            });
 
             li.appendChild(checkboxDiv);
             li.appendChild(textDiv);
+            li.appendChild(deleteBtn);
             taskList.appendChild(li);
 
             updateTaskCount();
@@ -266,6 +359,7 @@
                 createTaskItem(taskText);
                 playSound();
                 taskInput.value = '';
+                taskInput.focus();
             }
         });
 
@@ -274,6 +368,12 @@
                 addBtn.click();
             }
         });
+
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+        });
     </script>
 </body>
+
 </html>
